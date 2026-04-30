@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>German Shadower Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080b14;
+  --surface: #0f1320;
+  --surface2: #161c2e;
+  --surface3: #1e2640;
+  --surface4: #262f4d;
+  --accent: #3d7eff;
+  --accent2: #6c2bd9;
+  --accentGlow: rgba(61,126,255,0.25);
+  --gold: #f0a500;
+  --green: #00d4a0;
+  --red: #ff4757;
+  --text: #e6eaf8;
+  --text2: #7a85a8;
+  --text3: #3d4665;
+  --border: #1a2040;
+  --border2: #222a4a;
+  --mono: 'JetBrains Mono', monospace;
+  --arabic: 'Cairo', sans-serif;
+}
+.light {
+  --bg: #f4f6ff; --surface: #fff; --surface2: #eef1fc; --surface3: #e0e5f8; --surface4: #d0d8f0;
+  --text: #0f1320; --text2: #3d4665; --text3: #7a85a8; --border: #d0d8f0; --border2: #b8c4e8;
+  --accentGlow: rgba(61,126,255,0.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--arabic);background:var(--bg);color:var(--text);display:flex;flex-direction:column;transition:background .3s,color .3s}
+
+/* ─── HEADER ─── */
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 18px;background:var(--surface);
+  border-bottom:1px solid var(--border);flex-shrink:0;
+  box-shadow:0 2px 24px rgba(0,0,0,.4);position:relative;z-index:50;
+}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.1rem}
+.logo-badge{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+  box-shadow:0 4px 12px var(--accentGlow);
+}
+.logo-text{color:var(--accent)}
+.logo-text span{color:var(--gold)}
+.hdr-btns{display:flex;gap:6px}
+.ibtn{
+  width:34px;height:34px;border-radius:8px;border:1px solid var(--border2);
+  background:var(--surface2);color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.9rem;
+  transition:all .2s;
+}
+.ibtn:hover{background:var(--surface3);color:var(--accent);border-color:var(--accent)}
+
+/* ─── LAYOUT ─── */
+.app{display:flex;flex:1;overflow:hidden;height:calc(100vh - 57px)}
+
+/* ─── VIDEO SIDE ─── */
+.vside{display:flex;flex-direction:column;flex:1;overflow:hidden;background:#000;min-width:0}
+.vwrap{position:relative;flex-shrink:0;background:#000;aspect-ratio:16/9;max-height:58vh}
+.vwrap video{width:100%;height:100%;display:block;object-fit:contain}
+.vplaceholder{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;
+  background:linear-gradient(160deg,#080b14,#0f1320);
+}
+.vplaceholder .icon{font-size:3rem;opacity:.2}
+.vplaceholder p{color:var(--text3);font-size:.85rem;text-align:center}
+
+/* ─── SUBTITLE OVERLAY ─── */
+.sub-overlay{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:12px 16px 14px;
+  background:linear-gradient(transparent,rgba(0,0,0,.85) 40%);
+  text-align:center;
+  transition:opacity .2s;
+}
+.sub-overlay.hidden{opacity:0;pointer-events:none}
+.sub-de{
+  font-family:var(--mono);font-size:1.1rem;color:#fff;
+  line-height:1.7;direction:ltr;
+  text-shadow:0 1px 8px rgba(0,0,0,.9);
+}
+.sub-de .w{
+  cursor:pointer;padding:1px 4px;border-radius:4px;
+  transition:all .15s;display:inline-block;
+}
+.sub-de .w:hover{background:rgba(61,126,255,.35);color:#7fb3ff}
+.sub-de .w.hi{color:var(--gold);font-weight:700;text-shadow:0 0 12px rgba(240,165,0,.5)}
+.sub-ar{
+  font-size:.88rem;color:rgba(255,255,255,.75);
+  margin-top:4px;direction:rtl;
+  text-shadow:0 1px 6px rgba(0,0,0,.9);
+}
+
+/* ─── SHADOW OVERLAY ─── */
+.shd-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.82);
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  backdrop-filter:blur(2px);z-index:20;
+}
+.shd-overlay.on{display:flex}
+.shd-ring{
+  width:108px;height:108px;border-radius:50%;
+  border:3px solid var(--accent);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(61,126,255,.07);
+  animation:ringPulse 1.2s ease-in-out infinite;
+}
+@keyframes ringPulse{0%,100%{box-shadow:0 0 0 0 rgba(61,126,255,.4)}50%{box-shadow:0 0 0 14px rgba(61,126,255,0)}}
+.shd-num{font-family:var(--mono);font-size:2.6rem;font-weight:700;color:var(--accent);line-height:1}
+.shd-unit{font-size:.7rem;color:var(--text3);margin-top:2px}
+.shd-mic{font-size:2rem;animation:micBlink .7s ease-in-out infinite}
+@keyframes micBlink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.88)}}
+.shd-label{color:var(--text2);font-size:.88rem}
+
+/* ─── CONTROLS ─── */
+.cbar{
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  padding:9px 14px;background:var(--surface);
+  border-top:1px solid var(--border);flex-shrink:0;
+}
+.prog-row{width:100%;display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.prog-track{
+  flex:1;height:4px;background:var(--surface3);border-radius:4px;
+  cursor:pointer;position:relative;
+}
+.prog-track:hover{height:6px;transition:height .1s}
+.prog-fill{
+  height:100%;border-radius:4px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  width:0%;transition:width .1s linear;pointer-events:none;
+}
+.tlbl{font-family:var(--mono);font-size:.7rem;color:var(--text3);min-width:38px;text-align:center}
+.pbtn{
+  width:42px;height:42px;border-radius:50%;border:none;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px var(--accentGlow);transition:transform .15s;flex-shrink:0;
+}
+.pbtn:hover{transform:scale(1.07)}
+.sbtn{
+  width:32px;height:32px;border-radius:7px;border:1px solid var(--border2);
+  background:var(--surface2);color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;transition:all .2s;flex-shrink:0;font-family:var(--mono);
+}
+.sbtn:hover{background:var(--surface3);color:var(--text)}
+.cbtn{
+  display:flex;align-items:center;gap:4px;padding:6px 11px;
+  border-radius:7px;border:1px solid var(--border2);
+  background:var(--surface2);color:var(--text2);cursor:pointer;
+  font-family:var(--arabic);font-size:.78rem;transition:all .2s;white-space:nowrap;
+}
+.cbtn:hover{background:var(--surface3);color:var(--text)}
+.cbtn.on-sub{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cbtn.on-shd{background:var(--red);color:#fff;border-color:var(--red)}
+.cbtn.on-rep{background:var(--green);color:#000;border-color:var(--green)}
+.spd{
+  padding:6px 8px;border-radius:7px;border:1px solid var(--border2);
+  background:var(--surface2);color:var(--text);font-family:var(--arabic);
+  font-size:.78rem;cursor:pointer;outline:none;
+}
+
+/* ─── PANEL ─── */
+.panel{
+  width:340px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;
+}
+.ptabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.ptab{
+  flex:1;padding:10px 3px;text-align:center;font-size:.72rem;
+  color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;
+  transition:all .2s;white-space:nowrap;
+}
+.ptab.on{color:var(--accent);border-color:var(--accent);font-weight:700}
+.pcontent{flex:1;overflow-y:auto;padding:12px;scroll-behavior:smooth}
+.pcontent::-webkit-scrollbar{width:3px}
+.pcontent::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+
+/* ─── IMPORT ─── */
+.abox{
+  background:linear-gradient(135deg,rgba(61,126,255,.06),rgba(108,43,217,.06));
+  border:1px solid rgba(61,126,255,.2);border-radius:11px;
+  padding:13px;margin-bottom:14px;
+}
+.abox h4{font-size:.84rem;color:var(--accent);margin-bottom:5px}
+.abox p{font-size:.74rem;color:var(--text3);margin-bottom:7px}
+.lbl{display:block;font-size:.78rem;color:var(--text2);margin-bottom:4px}
+.tinput{
+  width:100%;padding:9px 12px;border-radius:8px;
+  border:1px solid var(--border2);background:var(--surface2);
+  color:var(--text);font-family:var(--arabic);font-size:.83rem;
+  outline:none;transition:border-color .2s;
+}
+.tinput:focus{border-color:var(--accent)}
+.tinput::placeholder{color:var(--text3)}
+.ig{margin-bottom:11px}
+.btn-p{
+  width:100%;padding:9px;border-radius:9px;border:none;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-family:var(--arabic);font-size:.86rem;font-weight:700;
+  cursor:pointer;transition:all .2s;box-shadow:0 3px 12px var(--accentGlow);
+}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 5px 18px var(--accentGlow)}
+.btn-o{
+  width:100%;padding:8px;border-radius:8px;
+  border:1px solid var(--accent);background:transparent;
+  color:var(--accent);font-family:var(--arabic);font-size:.8rem;
+  cursor:pointer;transition:all .2s;margin-top:5px;
+}
+.btn-o:hover{background:var(--accent);color:#fff}
+.fdrop{
+  border:2px dashed var(--border2);border-radius:10px;
+  padding:20px;text-align:center;cursor:pointer;
+  transition:all .2s;color:var(--text3);font-size:.8rem;margin-bottom:8px;
+}
+.fdrop:hover{border-color:var(--accent);color:var(--accent);background:rgba(61,126,255,.05)}
+.fdrop .di{font-size:1.8rem;margin-bottom:6px}
+.srt-box{
+  background:linear-gradient(135deg,rgba(0,212,160,.05),rgba(61,126,255,.05));
+  border:1px solid rgba(0,212,160,.2);border-radius:10px;padding:11px;margin-top:8px;
+}
+.srt-box strong{color:var(--green);font-size:.84rem}
+.srt-box p{font-size:.74rem;color:var(--text3);margin:4px 0 7px}
+.demo-box{
+  background:linear-gradient(135deg,rgba(0,212,160,.06),rgba(61,126,255,.06));
+  border:1px solid rgba(0,212,160,.18);border-radius:10px;padding:12px;margin-top:10px;
+}
+.demo-box strong{color:var(--green);font-size:.84rem}
+.demo-box p{font-size:.74rem;color:var(--text3);margin:4px 0 8px}
+
+/* ─── SENTENCE CARDS ─── */
+.sc{
+  padding:10px 12px;border-radius:9px;margin-bottom:6px;
+  background:var(--surface2);border:1px solid var(--border);
+  cursor:pointer;transition:all .18s;
+}
+.sc:hover{border-color:rgba(61,126,255,.35);background:var(--surface3)}
+.sc.cur{
+  border-color:var(--accent);background:rgba(61,126,255,.1);
+  box-shadow:0 0 0 1px rgba(61,126,255,.25);
+}
+.sn{font-family:var(--mono);font-size:.65rem;color:var(--text3);margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.sde{
+  font-family:var(--mono);font-size:.83rem;color:var(--text);
+  direction:ltr;text-align:left;line-height:1.65;margin-bottom:4px;
+}
+.sde .w{cursor:pointer;border-radius:3px;padding:1px 2px;transition:all .15s}
+.sde .w:hover{background:rgba(61,126,255,.2);color:#7fb3ff}
+.sar{font-size:.78rem;color:var(--text2);direction:rtl;text-align:right}
+.sacts{display:flex;gap:4px;margin-top:7px}
+.sab{
+  padding:4px 8px;border-radius:5px;border:1px solid var(--border2);
+  background:var(--surface3);color:var(--text2);font-size:.7rem;
+  cursor:pointer;font-family:var(--arabic);transition:all .2s;
+}
+.sab:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.bdg{
+  display:inline-block;padding:1px 6px;border-radius:20px;
+  font-size:.64rem;font-weight:700;
+  background:rgba(61,126,255,.15);color:var(--accent);
+}
+
+/* ─── WORD POPUP ─── */
+.wpop{
+  position:fixed;background:var(--surface);border:1px solid var(--border2);
+  border-radius:13px;padding:15px;width:270px;z-index:9999;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);display:none;
+  left:50%;top:50%;transform:translate(-50%,-50%);
+}
+.wpop.on{display:block;animation:popIn .15s ease}
+@keyframes popIn{from{opacity:0;transform:translate(-50%,-50%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%)}}
+.wph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.wword{font-family:var(--mono);font-size:1.18rem;color:var(--accent);font-weight:700;direction:ltr}
+.wphon{font-size:.74rem;color:var(--text3);direction:ltr;margin-top:2px}
+.wcls{
+  width:26px;height:26px;border-radius:5px;background:var(--surface2);
+  border:none;color:var(--text3);cursor:pointer;font-size:.9rem;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.wcls:hover{color:var(--red)}
+.wtag{
+  display:inline-block;padding:2px 8px;border-radius:20px;
+  font-size:.68rem;font-weight:700;margin-bottom:8px;
+}
+.t-der{background:rgba(61,126,255,.2);color:var(--accent)}
+.t-die{background:rgba(255,71,87,.18);color:var(--red)}
+.t-das{background:rgba(0,212,160,.15);color:var(--green)}
+.t-v{background:rgba(240,165,0,.15);color:var(--gold)}
+.wmean{font-size:.9rem;color:var(--text);font-weight:600;margin-bottom:6px}
+.wplr{font-size:.75rem;color:var(--text2);margin-bottom:8px}
+.wex{
+  background:var(--surface2);border-radius:6px;padding:7px 9px;
+  font-size:.75rem;color:var(--text2);direction:ltr;
+  border-right:3px solid var(--accent);line-height:1.55;
+}
+.wsave{
+  margin-top:10px;width:100%;padding:7px;border-radius:7px;
+  border:1px solid var(--border2);background:var(--surface2);
+  color:var(--text2);font-family:var(--arabic);font-size:.76rem;cursor:pointer;transition:all .2s;
+}
+.wsave:hover{background:var(--gold);color:#000;border-color:var(--gold)}
+.pop-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;
+}
+.pop-overlay.on{display:block}
+
+/* ─── AI PANEL ─── */
+.aipanel{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface);border-top:2px solid var(--border2);
+  padding:14px 20px;z-index:200;
+  transform:translateY(100%);transition:transform .28s ease;
+  max-height:52vh;overflow-y:auto;
+  box-shadow:0 -10px 40px rgba(0,0,0,.4);
+}
+.aipanel.on{transform:translateY(0)}
+.aihdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+.aihdr h4{color:var(--accent);font-size:.9rem;display:flex;align-items:center;gap:7px}
+.aicls{
+  width:26px;height:26px;border-radius:6px;border:1px solid var(--border2);
+  background:var(--surface2);color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.8rem;
+}
+.aicls:hover{color:var(--red)}
+.aitxt{font-size:.85rem;color:var(--text2);line-height:1.9}
+.aidots span{animation:dotBounce 1.3s ease-in-out infinite;display:inline-block;font-size:1.2rem}
+.aidots span:nth-child(2){animation-delay:.18s}
+.aidots span:nth-child(3){animation-delay:.36s}
+@keyframes dotBounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+
+/* ─── SAVED ─── */
+.si{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:8px 10px;border-radius:7px;
+  background:var(--surface2);border:1px solid var(--border);margin-bottom:5px;
+}
+.si-de{font-family:var(--mono);font-size:.85rem;color:var(--accent);direction:ltr}
+.si-ar{font-size:.75rem;color:var(--text2);margin-top:2px}
+.delbtn{
+  width:22px;height:22px;border-radius:4px;border:none;
+  background:transparent;color:var(--text3);cursor:pointer;font-size:.8rem;
+  padding:0;flex-shrink:0;
+}
+.delbtn:hover{color:var(--red)}
+
+/* ─── SETTINGS ─── */
+.srow{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:11px 0;border-bottom:1px solid var(--border);
+}
+.srow:last-child{border-bottom:none}
+.slbl{font-size:.83rem;color:var(--text)}
+.ssub{font-size:.72rem;color:var(--text3);margin-top:2px}
+.tog{
+  width:40px;height:21px;border-radius:11px;background:var(--surface3);
+  position:relative;cursor:pointer;transition:background .2s;border:none;flex-shrink:0;
+}
+.tog.on{background:var(--accent)}
+.tog::after{
+  content:'';position:absolute;width:15px;height:15px;
+  border-radius:50%;background:#fff;top:3px;left:3px;
+  transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+.tog.on::after{left:22px}
+.rnginput{width:85px;accent-color:var(--accent);cursor:pointer}
+
+/* ─── EMPTY ─── */
+.empty{text-align:center;padding:28px 16px;color:var(--text3)}
+.empty .ei{font-size:2rem;margin-bottom:7px;opacity:.3}
+.empty p{font-size:.8rem}
+
+/* ─── TOAST ─── */
+.toast{
+  position:fixed;bottom:70px;left:50%;
+  transform:translateX(-50%) translateY(12px);
+  background:var(--surface2);border:1px solid var(--border2);
+  border-radius:8px;padding:8px 16px;font-size:.8rem;color:var(--text);
+  z-index:500;opacity:0;transition:all .22s;pointer-events:none;
+  box-shadow:0 6px 20px rgba(0,0,0,.4);white-space:nowrap;
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ─── SRT STATUS ─── */
+.srt-status{
+  display:flex;align-items:center;gap:8px;padding:8px 12px;
+  background:rgba(0,212,160,.08);border:1px solid rgba(0,212,160,.2);
+  border-radius:8px;margin-bottom:10px;font-size:.78rem;color:var(--green);
+}
+
+/* ─── MOBILE ─── */
+@media(max-width:700px){
+  .app{flex-direction:column}
+  .panel{width:100%;flex:1;border-right:none;border-top:1px solid var(--border)}
+  .vwrap{max-height:35vh}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="logo">
+    <div class="logo-badge">🎧</div>
+    <div class="logo-text">German <span>Shadower</span> Pro</div>
+  </div>
+  <div class="hdr-btns">
+    <button class="ibtn" id="themeBtn" title="الوضع الليلي/النهاري">🌙</button>
+    <button class="ibtn" onclick="showTab('settings')">⚙️</button>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- VIDEO SIDE -->
+  <div class="vside">
+    <div class="vwrap" id="vwrap">
+      <div class="vplaceholder" id="vph">
+        <div class="icon">🎬</div>
+        <p>ارفع فيديو من جهازك<br><small style="font-size:.75rem;opacity:.6">MP4 · MKV · WebM · AVI</small></p>
+      </div>
+      <video id="vid" style="display:none" playsinline webkit-playsinline></video>
+
+      <!-- SUBTITLE -->
+      <div class="sub-overlay" id="subOverlay" style="display:none">
+        <div class="sub-de" id="subDe"></div>
+        <div class="sub-ar" id="subAr"></div>
+      </div>
+
+      <!-- SHADOW OVERLAY -->
+      <div class="shd-overlay" id="shdOverlay">
+        <div class="shd-mic">🎤</div>
+        <div class="shd-ring">
+          <div class="shd-num" id="shdNum">3</div>
+          <div class="shd-unit">ثانية</div>
+        </div>
+        <div class="shd-label">رددها الآن!</div>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="cbar">
+      <div class="prog-row">
+        <span class="tlbl" id="tCur">0:00</span>
+        <div class="prog-track" id="progTrack">
+          <div class="prog-fill" id="progFill"></div>
+        </div>
+        <span class="tlbl" id="tDur">0:00</span>
+      </div>
+      <button class="sbtn" onclick="skipSent(-1)" title="جملة سابقة">⏮</button>
+      <button class="sbtn" onclick="doSeek(-10)">-10s</button>
+      <button class="pbtn" id="playBtn" onclick="togglePlay()">▶</button>
+      <button class="sbtn" onclick="doSeek(10)">+10s</button>
+      <button class="sbtn" onclick="skipSent(1)" title="جملة تالية">⏭</button>
+      <select class="spd" id="spdSel" onchange="setSpeed(this.value)">
+        <option value="0.5">0.5x</option>
+        <option value="0.75">0.75x</option>
+        <option value="1" selected>1x</option>
+        <option value="1.25">1.25x</option>
+        <option value="1.5">1.5x</option>
+      </select>
+      <button class="cbtn" id="shdBtn" onclick="toggleShadow()">🎤 تظليل</button>
+      <button class="cbtn" id="repBtn" onclick="toggleRepeat()">🔁 تكرار</button>
+      <button class="cbtn on-sub" id="subBtn" onclick="toggleSubs()">💬 ترجمة</button>
+    </div>
+  </div>
+
+  <!-- PANEL -->
+  <div class="panel">
+    <div class="ptabs">
+      <div class="ptab on" id="tab-import" onclick="showTab('import')">📥 استيراد</div>
+      <div class="ptab" id="tab-sentences" onclick="showTab('sentences')">📝 الجمل</div>
+      <div class="ptab" id="tab-saved" onclick="showTab('saved')">⭐ محفوظ</div>
+      <div class="ptab" id="tab-settings" onclick="showTab('settings')">⚙️</div>
+    </div>
+
+    <!-- IMPORT -->
+    <div class="pcontent" id="import-tab">
+      <div class="abox">
+        <h4>🔑 مفتاح Gemini API (اختياري)</h4>
+        <p>لشرح الجمل والكلمات بالذكاء الاصطناعي — مجاني من Google</p>
+        <input type="password" class="tinput" id="apiInput" placeholder="AIzaSy..." style="direction:ltr;margin-bottom:6px">
+        <button class="btn-o" onclick="saveKey()">💾 حفظ المفتاح</button>
+        <p style="font-size:.7rem;color:var(--text3);margin-top:6px">
+          مجاني من <a href="https://aistudio.google.com" target="_blank" style="color:var(--accent)">aistudio.google.com</a>
+        </p>
+      </div>
+
+      <div class="ig">
+        <label class="lbl">📹 رفع فيديو من الجهاز</label>
+        <div class="fdrop" onclick="document.getElementById('vidFile').click()">
+          <div class="di">📁</div>
+          <p>اضغط لاختيار فيديو</p>
+          <p style="font-size:.7rem;margin-top:3px;color:var(--text3)">MP4 · MKV · WebM · AVI</p>
+        </div>
+        <input type="file" id="vidFile" accept="video/*" style="display:none" onchange="loadVideo(event)">
+      </div>
+
+      <div class="srt-box">
+        <strong>📄 ملف الترجمة SRT (مهم!)</strong>
+        <p>ارفع ملف SRT مع الفيديو للحصول على ترجمة متزامنة دقيقة</p>
+        <div class="fdrop" onclick="document.getElementById('srtFile').click()" style="padding:14px;margin-bottom:0">
+          <div class="di">📋</div>
+          <p>اضغط لاختيار ملف SRT</p>
+          <p style="font-size:.7rem;margin-top:2px;color:var(--text3)">كيف تحصل على SRT: downsub.com</p>
+        </div>
+        <input type="file" id="srtFile" accept=".srt,.vtt" style="display:none" onchange="loadSRT(event)">
+      </div>
+
+      <div class="demo-box" style="margin-top:10px">
+        <strong>🎯 وضع التجربة</strong>
+        <p>جمل ألمانية تعليمية جاهزة مع ترجمة عربية وتظليل كامل</p>
+        <button class="btn-p" onclick="loadDemo()" style="background:linear-gradient(135deg,var(--green),var(--accent))">▶ ابدأ التجربة الآن</button>
+      </div>
+    </div>
+
+    <!-- SENTENCES -->
+    <div class="pcontent" id="sentences-tab" style="display:none">
+      <div id="sentList"><div class="empty"><div class="ei">📝</div><p>الجمل تظهر هنا بعد تحميل الفيديو أو SRT</p></div></div>
+    </div>
+
+    <!-- SAVED -->
+    <div class="pcontent" id="saved-tab" style="display:none">
+      <div id="savedList"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="pcontent" id="settings-tab" style="display:none">
+      <div class="srow">
+        <div><div class="slbl">الوضع الليلي</div><div class="ssub">تغيير ألوان الواجهة</div></div>
+        <button class="tog on" id="darkTog" onclick="toggleTheme()"></button>
+      </div>
+      <div class="srow">
+        <div><div class="slbl">عرض الترجمة العربية</div><div class="ssub">أسفل النص الألماني</div></div>
+        <button class="tog on" id="transTog" onclick="toggleTranslation()"></button>
+      </div>
+      <div class="srow">
+        <div><div class="slbl">وضع التظليل</div><div class="ssub">توقف تلقائي للترديد</div></div>
+        <button class="tog" id="shdTog2" onclick="toggleShadow()"></button>
+      </div>
+      <div class="srow">
+        <div><div class="slbl">شفافية خلفية الترجمة</div></div>
+        <input type="range" class="rnginput" min="30" max="100" value="85" oninput="setOpacity(this.value)">
+      </div>
+      <div class="srow">
+        <div><div class="slbl">حجم خط الترجمة</div></div>
+        <input type="range" class="rnginput" min="12" max="22" value="17" oninput="setFontSize(this.value)">
+      </div>
+      <div class="srow">
+        <div><div class="slbl">تكرار الجملة</div></div>
+        <select class="spd" onchange="S.repeatCount=parseInt(this.value)" style="width:70px">
+          <option value="1">1x</option><option value="2">2x</option><option value="3">3x</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY for popup -->
+<div class="pop-overlay" id="popOverlay" onclick="closePopup()"></div>
+
+<!-- WORD POPUP -->
+<div class="wpop" id="wPop">
+  <div class="wph">
+    <div><div class="wword" id="pWord"></div><div class="wphon" id="pPhon"></div></div>
+    <button class="wcls" onclick="closePopup()">✕</button>
+  </div>
+  <div id="pTag"></div>
+  <div class="wmean" id="pMean"></div>
+  <div class="wplr" id="pPlr"></div>
+  <div class="wex" id="pEx"></div>
+  <button class="wsave" onclick="saveWord()">⭐ حفظ في المفضلة</button>
+</div>
+
+<!-- AI PANEL -->
+<div class="aipanel" id="aiPanel">
+  <div class="aihdr">
+    <h4>🤖 شرح الذكاء الاصطناعي</h4>
+    <button class="aicls" onclick="closeAI()">✕</button>
+  </div>
+  <div class="aitxt" id="aiTxt"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════
+const S = {
+  playing: false,
+  shadowMode: false,
+  repeatMode: false,
+  showSubs: true,
+  showTrans: true,
+  dark: true,
+  sentences: [],
+  savedWords: [],
+  apiKey: '',
+  repeatCount: 1,
+  curIdx: -1,
+  wordForSave: '',
+  demoMode: false,
+  demoTime: 0,
+  demoTimer: null,
+  shadowLocked: false,
+  videoReady: false,
+  srtLoaded: false,
+  // NEW: polling interval for Android WebView fix
+  syncInterval: null,
+  lastRepeatIdx: -1,
+  repeatDone: 0,
+};
+
+// ════════════════════════════════════════
+//  DEMO DATA
+// ════════════════════════════════════════
+const DEMO_SENTS = [
+  {de:"Guten Morgen! Wie geht es Ihnen heute?",ar:"صباح الخير! كيف حالك اليوم؟",start:0,end:3.5,words:["Guten","Morgen!","Wie","geht","es","Ihnen","heute?"]},
+  {de:"Ich bin Krankenpfleger und arbeite im Krankenhaus.",ar:"أنا ممرض وأعمل في المستشفى.",start:4.5,end:8.5,words:["Ich","bin","Krankenpfleger","und","arbeite","im","Krankenhaus."]},
+  {de:"Der Patient hat starke Schmerzen und braucht sofort Hilfe.",ar:"المريض يعاني من آلام شديدة ويحتاج لمساعدة فورية.",start:9.5,end:14,words:["Der","Patient","hat","starke","Schmerzen","und","braucht","sofort","Hilfe."]},
+  {de:"Bitte nehmen Sie diese Medikamente dreimal täglich ein.",ar:"تناول هذه الأدوية ثلاث مرات يوميًا من فضلك.",start:15,end:19.5,words:["Bitte","nehmen","Sie","diese","Medikamente","dreimal","täglich","ein."]},
+  {de:"Die Ausbildung zur Pflegefachkraft dauert drei Jahre.",ar:"يستغرق التدريب كممرض متخصص ثلاث سنوات.",start:20.5,end:24.5,words:["Die","Ausbildung","zur","Pflegefachkraft","dauert","drei","Jahre."]},
+  {de:"Heute habe ich Nachtdienst und fange um 22 Uhr an.",ar:"لدي وردية ليلية اليوم وأبدأ الساعة العاشرة مساءً.",start:25.5,end:30,words:["Heute","habe","ich","Nachtdienst","und","fange","um","22","Uhr","an."]},
+  {de:"Könnten Sie bitte Ihren Blutdruck messen lassen?",ar:"هل يمكنك قياس ضغط دمك من فضلك؟",start:31,end:35.5,words:["Könnten","Sie","bitte","Ihren","Blutdruck","messen","lassen?"]},
+  {de:"Das Gehalt nach TVöD ist fair und transparent geregelt.",ar:"الراتب وفق TVöD منظم بشكل عادل وشفاف.",start:36.5,end:41,words:["Das","Gehalt","nach","TVöD","ist","fair","und","transparent","geregelt."]},
+];
+
+// ════════════════════════════════════════
+//  DICT
+// ════════════════════════════════════════
+const DICT = {
+  Krankenhaus:{art:"das",pl:"Krankenhäuser",mean:"المستشفى",ph:"/ˈkʁaŋkənˌhaʊs/",ex:"Das Krankenhaus ist sehr groß.",t:"das"},
+  Krankenpfleger:{art:"der",pl:"Krankenpfleger",mean:"الممرض",ph:"/ˈkʁaŋkənˌpfleːɡɐ/",ex:"Der Krankenpfleger arbeitet fleißig.",t:"der"},
+  Patient:{art:"der",pl:"Patienten",mean:"المريض",ph:"/paˈtsi̯ɛnt/",ex:"Der Patient braucht Hilfe.",t:"der"},
+  Schmerzen:{art:"die",pl:"(جمع دائمًا)",mean:"الآلام",ph:"/ˈʃmɛʁtsn̩/",ex:"Er hat starke Schmerzen.",t:"die"},
+  Medikamente:{art:"das",pl:"Medikamente",mean:"الأدوية",ph:"/medikaˈmɛntə/",ex:"Nehmen Sie die Medikamente.",t:"das"},
+  Ausbildung:{art:"die",pl:"Ausbildungen",mean:"التدريب المهني",ph:"/ˈaʊsˌbɪldʊŋ/",ex:"Die Ausbildung dauert 3 Jahre.",t:"die"},
+  Pflegefachkraft:{art:"die",pl:"Pflegefachkräfte",mean:"الممرض/ة المتخصص/ة",ph:"/ˈpfleːɡəˌfaxˌkʁaft/",ex:"Sie ist eine erfahrene Pflegefachkraft.",t:"die"},
+  Nachtdienst:{art:"der",pl:"Nachtdienste",mean:"الوردية الليلية",ph:"/ˈnaxtˌdiːnst/",ex:"Heute habe ich Nachtdienst.",t:"der"},
+  Blutdruck:{art:"der",pl:"Blutdrücke",mean:"ضغط الدم",ph:"/ˈbluːtˌdʁʊk/",ex:"Messen Sie bitte Ihren Blutdruck.",t:"der"},
+  Gehalt:{art:"das",pl:"Gehälter",mean:"الراتب",ph:"/ɡəˈhalt/",ex:"Das Gehalt wird monatlich gezahlt.",t:"das"},
+  arbeite:{art:"",pl:"",mean:"أعمل — فعل: arbeiten",ph:"/ˈaʁbaɪ̯tə/",ex:"Ich arbeite im Krankenhaus.",t:"v"},
+  braucht:{art:"",pl:"",mean:"يحتاج — فعل: brauchen",ph:"/bʁaʊxt/",ex:"Er braucht sofort Hilfe.",t:"v"},
+  täglich:{art:"",pl:"",mean:"يوميًا",ph:"/ˈteːklɪç/",ex:"Nehmen Sie es täglich ein.",t:"v"},
+  sofort:{art:"",pl:"",mean:"فورًا",ph:"/zoˈfɔʁt/",ex:"Kommen Sie sofort!",t:"v"},
+  messen:{art:"",pl:"",mean:"يقيس — فعل",ph:"/ˈmɛsn̩/",ex:"Wir müssen den Blutdruck messen.",t:"v"},
+  Guten:{art:"",pl:"",mean:"جيد (صفة) — في Guten Morgen = صباح الخير",ph:"/ˈɡuːtn̩/",ex:"Guten Morgen! Guten Tag!",t:"v"},
+  dreimal:{art:"",pl:"",mean:"ثلاث مرات",ph:"/ˈdʁaɪ̯maːl/",ex:"Nehmen Sie es dreimal täglich.",t:"v"},
+  transparent:{art:"",pl:"",mean:"شفاف / واضح",ph:"/tʁanspɑˈʁɛnt/",ex:"Das System ist transparent.",t:"v"},
+};
+
+// ════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  const k = localStorage.getItem('gsp_key');
+  if (k) { S.apiKey = k; document.getElementById('apiInput').value = k; }
+  const sw = localStorage.getItem('gsp_saved');
+  if (sw) try { S.savedWords = JSON.parse(sw); } catch(e){}
+  renderSaved();
+  initVideoEvents();
+  initProgTrack();
+  // START MASTER SYNC LOOP — runs every 150ms regardless of timeupdate
+  // This is the KEY FIX for Android WebView
+  startMasterLoop();
+});
+
+// ════════════════════════════════════════
+//  MASTER SYNC LOOP (Android WebView Fix)
+//  Polls video.currentTime every 150ms instead of relying on timeupdate
+// ════════════════════════════════════════
+function startMasterLoop() {
+  // Clear any existing
+  if (S.syncInterval) clearInterval(S.syncInterval);
+  S.syncInterval = setInterval(() => {
+    if (S.demoMode) {
+      demoTick();
+      return;
+    }
+    const vid = document.getElementById('vid');
+    if (!vid || !S.videoReady) return;
+    const ct = vid.currentTime;
+    const dur = vid.duration || 0;
+    // Update progress bar
+    updateProg(ct, dur);
+    // Sync subtitle
+    syncSubtitle(ct);
+    // Handle repeat
+    handleRepeat(ct);
+  }, 150);
+}
+
+// ════════════════════════════════════════
+//  VIDEO EVENTS
+// ════════════════════════════════════════
+function initVideoEvents() {
+  const vid = document.getElementById('vid');
+  vid.addEventListener('play', () => {
+    S.playing = true;
+    document.getElementById('playBtn').textContent = '⏸';
+  });
+  vid.addEventListener('pause', () => {
+    S.playing = false;
+    document.getElementById('playBtn').textContent = '▶';
+  });
+  vid.addEventListener('ended', () => {
+    S.playing = false;
+    document.getElementById('playBtn').textContent = '▶';
+  });
+}
+
+// ════════════════════════════════════════
+//  LOAD VIDEO (local file)
+// ════════════════════════════════════════
+function loadVideo(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const vid = document.getElementById('vid');
+  stopDemo();
+  // Revoke old URL
+  if (vid.src && vid.src.startsWith('blob:')) URL.revokeObjectURL(vid.src);
+  const url = URL.createObjectURL(file);
+  vid.src = url;
+  vid.load();
+  vid.style.display = 'block';
+  document.getElementById('vph').style.display = 'none';
+  document.getElementById('subOverlay').style.display = 'block';
+  vid.addEventListener('loadedmetadata', () => {
+    S.videoReady = true;
+    document.getElementById('tDur').textContent = fmt(vid.duration);
+    showToast('✅ تم تحميل الفيديو — ارفع ملف SRT للترجمة');
+    if (S.sentences.length) showTab('sentences');
+  }, {once:true});
+}
+
+// ════════════════════════════════════════
+//  LOAD SRT
+// ════════════════════════════════════════
+function loadSRT(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const parsed = parseSRT(ev.target.result);
+    if (!parsed.length) { showToast('⚠️ لم يتم التعرف على ملف SRT'); return; }
+    S.sentences = parsed;
+    S.srtLoaded = true;
+    S.curIdx = -1;
+    renderSentences();
+    showTab('sentences');
+    showToast('✅ تم تحميل ' + parsed.length + ' جملة من SRT');
+    showSRTStatus(file.name, parsed.length);
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+// ════════════════════════════════════════
+//  SRT PARSER (robust version)
+// ════════════════════════════════════════
+function parseSRT(text) {
+  const results = [];
+  // Normalize line endings
+  text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  // Split by double newline (block separator)
+  const blocks = text.split(/\n\s*\n/);
+  for (const block of blocks) {
+    const lines = block.trim().split('\n');
+    if (lines.length < 2) continue;
+    // Find the time line
+    let timeLine = '';
+    let textStartIdx = 0;
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].includes('-->')) {
+        timeLine = lines[i];
+        textStartIdx = i + 1;
+        break;
+      }
+    }
+    if (!timeLine) continue;
+    const times = parseTimeLine(timeLine);
+    if (!times) continue;
+    const txtLines = lines.slice(textStartIdx)
+      .map(l => l.replace(/<[^>]+>/g, '').trim())
+      .filter(Boolean);
+    const raw = txtLines.join(' ').trim();
+    if (!raw) continue;
+    results.push({
+      de: raw,
+      ar: '',
+      start: times.start,
+      end: times.end,
+      words: raw.split(/\s+/),
+    });
+  }
+  return results;
+}
+
+function parseTimeLine(line) {
+  // Match HH:MM:SS,mmm --> HH:MM:SS,mmm  (SRT format)
+  // or HH:MM:SS.mmm --> HH:MM:SS.mmm     (VTT format)
+  const m = line.match(/(\d{1,2}:\d{2}:\d{2}[,\.]\d{2,3})\s*-->\s*(\d{1,2}:\d{2}:\d{2}[,\.]\d{2,3})/);
+  if (!m) {
+    // Try MM:SS,mmm format
+    const m2 = line.match(/(\d{1,2}:\d{2}[,\.]\d{2,3})\s*-->\s*(\d{1,2}:\d{2}[,\.]\d{2,3})/);
+    if (!m2) return null;
+    return { start: toSec(m2[1]), end: toSec(m2[2]) };
+  }
+  return { start: toSec(m[1]), end: toSec(m[2]) };
+}
+
+function toSec(ts) {
+  // Replace comma with dot for ms
+  ts = ts.replace(',', '.');
+  const parts = ts.split(':');
+  if (parts.length === 3) {
+    // HH:MM:SS.mmm
+    return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseFloat(parts[2]);
+  } else if (parts.length === 2) {
+    // MM:SS.mmm
+    return parseInt(parts[0]) * 60 + parseFloat(parts[1]);
+  }
+  return parseFloat(ts) || 0;
+}
+
+function showSRTStatus(name, count) {
+  const imp = document.getElementById('import-tab');
+  const old = imp.querySelector('.srt-status');
+  if (old) old.remove();
+  const el = document.createElement('div');
+  el.className = 'srt-status';
+  el.innerHTML = '✅ <span>SRT محمّل: <strong>' + name + '</strong> — ' + count + ' جملة</span>';
+  imp.prepend(el);
+}
+
+// ════════════════════════════════════════
+//  SYNC SUBTITLE (called by master loop)
+// ════════════════════════════════════════
+function syncSubtitle(currentTime) {
+  if (!S.sentences.length) return;
+  let found = -1;
+  for (let i = 0; i < S.sentences.length; i++) {
+    if (currentTime >= S.sentences[i].start && currentTime < S.sentences[i].end) {
+      found = i; break;
+    }
+  }
+  if (found === -1) {
+    document.getElementById('subDe').innerHTML = '';
+    document.getElementById('subAr').textContent = '';
+    return;
+  }
+  if (found !== S.curIdx) {
+    S.curIdx = found;
+    renderSubtitle(found);
+    highlightCard(found);
+    // Shadow mode: pause and countdown
+    if (S.shadowMode && !S.shadowLocked) {
+      const vid = document.getElementById('vid');
+      if (!S.demoMode && S.videoReady) vid.pause();
+      if (S.demoMode) S.playing = false;
+      S.shadowLocked = true;
+      const dur = Math.max(2, S.sentences[found].end - S.sentences[found].start);
+      showShadowCountdown(dur, () => {
+        S.shadowLocked = false;
+        if (!S.demoMode && S.videoReady) document.getElementById('vid').play();
+        if (S.demoMode) S.playing = true;
+      });
+    }
+  }
+  // Word highlight by progress
+  const s = S.sentences[found];
+  const prog = (currentTime - s.start) / (s.end - s.start);
+  const wi = Math.min(Math.floor(prog * s.words.length), s.words.length - 1);
+  highlightWord(wi);
+}
+
+// ════════════════════════════════════════
+//  DEMO MODE
+// ════════════════════════════════════════
+function loadDemo() {
+  stopDemo();
+  S.sentences = DEMO_SENTS.map(s => ({...s}));
+  S.demoMode = true;
+  S.demoTime = 0;
+  S.curIdx = -1;
+  renderSentences();
+  document.getElementById('vph').style.display = 'flex';
+  document.getElementById('vph').innerHTML = '<div class="icon">🎧</div><p>وضع التجربة — جمل تعليمية<br><small style="opacity:.5">لا يوجد فيديو في هذا الوضع</small></p>';
+  document.getElementById('subOverlay').style.display = 'block';
+  document.getElementById('vid').style.display = 'none';
+  showTab('sentences');
+  S.playing = true;
+  document.getElementById('playBtn').textContent = '⏸';
+  showToast('🎬 وضع التجربة — جمل تعليمية');
+}
+
+function stopDemo() {
+  S.demoMode = false;
+  S.playing = false;
+  document.getElementById('playBtn').textContent = '▶';
+}
+
+// demoTick is called from master loop every 150ms
+function demoTick() {
+  if (!S.playing || S.shadowLocked) return;
+  S.demoTime += 0.15; // 150ms
+  const total = DEMO_SENTS[DEMO_SENTS.length - 1].end + 1;
+  if (S.demoTime > total) { S.demoTime = 0; S.curIdx = -1; return; }
+  updateProg(S.demoTime, total);
+  syncSubtitle(S.demoTime);
+}
+
+// ════════════════════════════════════════
+//  RENDER SUBTITLE
+// ════════════════════════════════════════
+function renderSubtitle(idx) {
+  const s = S.sentences[idx];
+  const deEl = document.getElementById('subDe');
+  // Use German-aware regex for word cleaning
+  deEl.innerHTML = s.words.map((w, i) => {
+    const clean = w.replace(/[^a-zA-ZäöüÄÖÜß]/g, '');
+    return '<span class="w" data-w="' + clean + '" onclick="onWordClick(\'' + clean.replace(/'/g, "\\'") + '\',event)">' + escHtml(w) + '</span> ';
+  }).join('');
+  document.getElementById('subAr').textContent = S.showTrans ? (s.ar || '') : '';
+}
+
+function highlightWord(wi) {
+  document.querySelectorAll('#subDe .w').forEach((el, i) => el.classList.toggle('hi', i === wi));
+}
+
+function highlightCard(idx) {
+  document.querySelectorAll('.sc').forEach((el, i) => {
+    el.classList.toggle('cur', i === idx);
+    if (i === idx) el.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ════════════════════════════════════════
+//  CONTROLS
+// ════════════════════════════════════════
+function togglePlay() {
+  const vid = document.getElementById('vid');
+  if (S.demoMode) {
+    S.playing = !S.playing;
+    document.getElementById('playBtn').textContent = S.playing ? '⏸' : '▶';
+  } else if (S.videoReady) {
+    if (vid.paused) {
+      vid.play().catch(e => showToast('⚠️ خطأ في التشغيل'));
+    } else {
+      vid.pause();
+    }
+  } else {
+    showToast('⚠️ ارفع فيديو أولاً');
+  }
+}
+
+function doSeek(sec) {
+  if (S.demoMode) {
+    S.demoTime = Math.max(0, S.demoTime + sec);
+  } else if (S.videoReady) {
+    const vid = document.getElementById('vid');
+    vid.currentTime = Math.max(0, Math.min(vid.duration || 0, vid.currentTime + sec));
+  }
+}
+
+function skipSent(dir) {
+  const ni = S.curIdx + dir;
+  if (ni < 0 || ni >= S.sentences.length) return;
+  const s = S.sentences[ni];
+  if (S.demoMode) {
+    S.demoTime = s.start + 0.05;
+  } else if (S.videoReady) {
+    const vid = document.getElementById('vid');
+    // KEY FIX: set currentTime then ensure playing
+    vid.currentTime = s.start + 0.05;
+    if (vid.paused) vid.play().catch(() => {});
+  }
+  S.curIdx = ni;
+  renderSubtitle(ni);
+  highlightCard(ni);
+}
+
+function setSpeed(v) {
+  const vid = document.getElementById('vid');
+  if (S.videoReady) vid.playbackRate = parseFloat(v);
+  showToast('⚡ السرعة: ' + v + 'x');
+}
+
+function initProgTrack() {
+  document.getElementById('progTrack').addEventListener('click', (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    if (S.demoMode) {
+      const total = DEMO_SENTS[DEMO_SENTS.length - 1].end;
+      S.demoTime = ratio * total;
+    } else if (S.videoReady) {
+      const vid = document.getElementById('vid');
+      vid.currentTime = ratio * (vid.duration || 0);
+    }
+  });
+}
+
+function updateProg(cur, total) {
+  const pct = total ? (cur / total * 100) : 0;
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('tCur').textContent = fmt(cur);
+  document.getElementById('tDur').textContent = fmt(total || 0);
+}
+
+function fmt(s) {
+  if (!s || isNaN(s)) return '0:00';
+  return Math.floor(s / 60) + ':' + Math.floor(s % 60).toString().padStart(2, '0');
+}
+
+// ════════════════════════════════════════
+//  REPEAT MODE (called from master loop)
+// ════════════════════════════════════════
+function handleRepeat(currentTime) {
+  if (!S.repeatMode || S.repeatCount <= 1) return;
+  if (!S.sentences.length || S.curIdx < 0) return;
+  const s = S.sentences[S.curIdx];
+  if (!s) return;
+  // Reset counter when sentence changes
+  if (S.curIdx !== S.lastRepeatIdx) {
+    S.lastRepeatIdx = S.curIdx;
+    S.repeatDone = 0;
+  }
+  // If near end of sentence and haven't done enough repeats
+  if (currentTime >= s.end - 0.2 && S.repeatDone < S.repeatCount - 1) {
+    S.repeatDone++;
+    if (S.demoMode) {
+      S.demoTime = s.start + 0.05;
+    } else if (S.videoReady) {
+      document.getElementById('vid').currentTime = s.start + 0.05;
+    }
+  }
+}
+
+// ════════════════════════════════════════
+//  SHADOW
+// ════════════════════════════════════════
+function toggleShadow() {
+  S.shadowMode = !S.shadowMode;
+  document.getElementById('shdBtn').className = 'cbtn' + (S.shadowMode ? ' on-shd' : '');
+  document.getElementById('shdTog2').classList.toggle('on', S.shadowMode);
+  showToast(S.shadowMode ? '🎤 وضع التظليل مفعّل' : '🔇 وضع التظليل موقوف');
+}
+
+function showShadowCountdown(dur, cb) {
+  const overlay = document.getElementById('shdOverlay');
+  const numEl = document.getElementById('shdNum');
+  overlay.classList.add('on');
+  let r = Math.ceil(dur);
+  numEl.textContent = r;
+  const iv = setInterval(() => {
+    r--;
+    numEl.textContent = Math.max(0, r);
+    if (r <= 0) {
+      clearInterval(iv);
+      overlay.classList.remove('on');
+      if (cb) cb();
+    }
+  }, 1000);
+}
+
+// ════════════════════════════════════════
+//  SUBS / TRANSLATION
+// ════════════════════════════════════════
+function toggleSubs() {
+  S.showSubs = !S.showSubs;
+  document.getElementById('subOverlay').classList.toggle('hidden', !S.showSubs);
+  document.getElementById('subBtn').className = 'cbtn' + (S.showSubs ? ' on-sub' : '');
+}
+
+function toggleTranslation() {
+  S.showTrans = !S.showTrans;
+  document.getElementById('transTog').classList.toggle('on', S.showTrans);
+  const s = S.sentences[S.curIdx];
+  document.getElementById('subAr').textContent = S.showTrans && s ? (s.ar || '') : '';
+}
+
+function toggleRepeat() {
+  S.repeatMode = !S.repeatMode;
+  S.repeatDone = 0;
+  document.getElementById('repBtn').className = 'cbtn' + (S.repeatMode ? ' on-rep' : '');
+  showToast(S.repeatMode ? '🔁 تكرار الجملة مفعّل' : '🔁 تكرار موقوف');
+}
+
+function setOpacity(v) {
+  document.getElementById('subOverlay').style.background =
+    'linear-gradient(transparent, rgba(0,0,0,' + (v / 100) + ') 40%)';
+}
+
+function setFontSize(v) {
+  document.getElementById('subDe').style.fontSize = v + 'px';
+}
+
+// ════════════════════════════════════════
+//  RENDER SENTENCES LIST
+// ════════════════════════════════════════
+function renderSentences() {
+  const c = document.getElementById('sentList');
+  if (!S.sentences.length) {
+    c.innerHTML = '<div class="empty"><div class="ei">📝</div><p>لا توجد جمل</p></div>';
+    return;
+  }
+  c.innerHTML = S.sentences.map((s, i) => {
+    const wordsHtml = s.words.map(w => {
+      const cl = w.replace(/[^a-zA-ZäöüÄÖÜß]/g, '');
+      return '<span class="w" onclick="event.stopPropagation();onWordClick(\'' + cl.replace(/'/g, "\\'") + '\',event)">' + escHtml(w) + '</span>';
+    }).join(' ');
+    return '<div class="sc" id="sc-' + i + '" onclick="jumpTo(' + i + ')">' +
+      '<div class="sn">#' + (i+1) + ' <span class="bdg">' + fmt(s.start) + '–' + fmt(s.end) + '</span></div>' +
+      '<div class="sde">' + wordsHtml + '</div>' +
+      (s.ar ? '<div class="sar">' + escHtml(s.ar) + '</div>' : '<div class="sar" id="ar-' + i + '" style="color:var(--text3);font-size:.73rem">اضغط "شرح AI" للترجمة</div>') +
+      '<div class="sacts">' +
+        '<button class="sab" onclick="event.stopPropagation();explainSent(' + i + ')">🤖 شرح AI</button>' +
+        '<button class="sab" onclick="event.stopPropagation();saveSent(' + i + ')">⭐ حفظ</button>' +
+        '<button class="sab" onclick="event.stopPropagation();jumpTo(' + i + ')">▶ تشغيل</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// KEY FIX: jumpTo now correctly seeks and plays
+function jumpTo(idx) {
+  if (idx < 0 || idx >= S.sentences.length) return;
+  const s = S.sentences[idx];
+  S.curIdx = idx;
+  if (S.demoMode) {
+    S.demoTime = s.start + 0.05;
+    S.playing = true;
+    document.getElementById('playBtn').textContent = '⏸';
+  } else if (S.videoReady) {
+    const vid = document.getElementById('vid');
+    // Set time first
+    vid.currentTime = s.start + 0.05;
+    // Then play (important for Android)
+    const playPromise = vid.play();
+    if (playPromise) playPromise.catch(() => {});
+  }
+  renderSubtitle(idx);
+  highlightCard(idx);
+}
+
+// ════════════════════════════════════════
+//  WORD POPUP
+// ════════════════════════════════════════
+function onWordClick(word, e) {
+  if (!word || word.length < 2) return;
+  if (e) e.stopPropagation();
+  S.wordForSave = word;
+  const info = DICT[word];
+  document.getElementById('pWord').textContent = word;
+  document.getElementById('pPhon').textContent = info ? (info.ph || '') : '';
+  const tagEl = document.getElementById('pTag');
+  if (info) {
+    const tmap = {der:'🔵 مذكر', die:'🔴 مؤنث', das:'🟢 محايد', v:'🟡 فعل / صفة'};
+    tagEl.innerHTML = '<span class="wtag t-' + (info.t === 'v' ? 'v' : info.t) + '">' + (tmap[info.t] || info.t) + (info.art ? ' — ' + info.art : '') + '</span>';
+    document.getElementById('pMean').textContent = info.mean;
+    document.getElementById('pPlr').textContent = info.pl ? 'الجمع: ' + info.pl : '';
+    document.getElementById('pEx').textContent = info.ex;
+  } else {
+    tagEl.innerHTML = '';
+    if (S.apiKey) {
+      document.getElementById('pMean').textContent = 'جاري جلب الشرح...';
+      document.getElementById('pPlr').textContent = '';
+      document.getElementById('pEx').textContent = '';
+      fetchWordAI(word);
+    } else {
+      document.getElementById('pMean').textContent = 'الكلمة غير موجودة في القاموس — أضف مفتاح Gemini للشرح التلقائي';
+      document.getElementById('pPlr').textContent = '';
+      document.getElementById('pEx').textContent = '';
+    }
+  }
+  document.getElementById('wPop').classList.add('on');
+  document.getElementById('popOverlay').classList.add('on');
+}
+
+function fetchWordAI(word) {
+  if (!S.apiKey) return;
+  const prompt = 'اشرح الكلمة الألمانية "' + word + '" بالعربية في 3 أسطر: 1. المعنى 2. إن كانت اسمًا: أداة التعريف والجمع 3. مثال. بالعربية فقط.';
+  callGemini(prompt, 150, function(result) {
+    if (document.getElementById('wPop').classList.contains('on')) {
+      document.getElementById('pMean').textContent = result;
+    }
+  });
+}
+
+function closePopup() {
+  document.getElementById('wPop').classList.remove('on');
+  document.getElementById('popOverlay').classList.remove('on');
+}
+
+function saveWord() {
+  const w = S.wordForSave;
+  if (!w) return;
+  const info = DICT[w];
+  if (!S.savedWords.find(s => s.word === w)) {
+    S.savedWords.push({word: w, meaning: info?.mean || '—', art: info?.art || ''});
+    localStorage.setItem('gsp_saved', JSON.stringify(S.savedWords));
+    renderSaved();
+    showToast('⭐ تم حفظ: ' + w);
+  } else {
+    showToast('الكلمة محفوظة مسبقًا');
+  }
+  closePopup();
+}
+
+function saveSent(idx) {
+  const s = S.sentences[idx];
+  const key = '📝 ' + s.de.substring(0, 30);
+  if (!S.savedWords.find(x => x.word === key)) {
+    S.savedWords.push({word: key, meaning: s.ar || '', art: ''});
+    localStorage.setItem('gsp_saved', JSON.stringify(S.savedWords));
+    renderSaved();
+    showToast('✅ تم حفظ الجملة');
+  } else {
+    showToast('الجملة محفوظة مسبقًا');
+  }
+}
+
+function renderSaved() {
+  const c = document.getElementById('savedList');
+  if (!S.savedWords.length) {
+    c.innerHTML = '<div class="empty"><div class="ei">⭐</div><p>اضغط على كلمة لحفظها</p></div>';
+    return;
+  }
+  c.innerHTML = S.savedWords.map((w, i) =>
+    '<div class="si">' +
+      '<div>' +
+        '<div class="si-de">' + (w.art ? '<span style="color:var(--text3);font-size:.74rem">' + w.art + ' </span>' : '') + escHtml(w.word) + '</div>' +
+        (w.meaning ? '<div class="si-ar">' + escHtml(w.meaning) + '</div>' : '') +
+      '</div>' +
+      '<button class="delbtn" onclick="delWord(' + i + ')">🗑</button>' +
+    '</div>'
+  ).join('');
+}
+
+function delWord(idx) {
+  S.savedWords.splice(idx, 1);
+  localStorage.setItem('gsp_saved', JSON.stringify(S.savedWords));
+  renderSaved();
+}
+
+// ════════════════════════════════════════
+//  AI EXPLAIN SENTENCE
+// ════════════════════════════════════════
+function explainSent(idx) {
+  const s = S.sentences[idx];
+  const panel = document.getElementById('aiPanel');
+  const content = document.getElementById('aiTxt');
+  panel.classList.add('on');
+
+  if (!S.apiKey) {
+    content.innerHTML =
+      '<p style="color:var(--gold);margin-bottom:10px">⚠️ أضف مفتاح Gemini API في قسم "استيراد" للحصول على شرح تفصيلي مجاني</p>' +
+      '<div style="background:var(--surface2);border-radius:7px;padding:9px;direction:ltr;font-family:var(--mono);font-size:.88rem;color:var(--accent);margin-bottom:10px">' + escHtml(s.de) + '</div>' +
+      (s.ar ? '<p><strong>الترجمة:</strong> ' + escHtml(s.ar) + '</p>' : '') +
+      '<hr style="border-color:var(--border);margin:10px 0">' +
+      '<p style="color:var(--text3);font-size:.76rem">المفتاح مجاني من <a href="https://aistudio.google.com" target="_blank" style="color:var(--accent)">aistudio.google.com</a></p>';
+    return;
+  }
+
+  content.innerHTML = '<div style="display:flex;align-items:center;gap:8px;color:var(--text3);font-size:.83rem">جاري التحليل <span class="aidots"><span>·</span><span>·</span><span>·</span></span></div>';
+
+  var prompt = 'اشرح هذه الجملة الألمانية للمتعلمين العرب:\n\n"' + s.de + '"\n\nالشرح يشمل:\n1. الترجمة الكاملة\n2. تحليل قواعدي مبسط\n3. كلمات مفتاحية مع معانيها\n\nالرد بالعربية فقط. أجب باختصار ووضوح.';
+  callGemini(prompt, 600, function(t) {
+    if (!s.ar) {
+      s.ar = t.split('\n')[0].replace(/^الترجمة[: ]+/, '').trim();
+      var arEl = document.getElementById('ar-' + idx);
+      if (arEl) arEl.textContent = s.ar;
+      if (S.curIdx === idx) {
+        document.getElementById('subAr').textContent = S.showTrans ? s.ar : '';
+      }
+    }
+    content.innerHTML =
+      '<div style="background:var(--surface2);border-radius:7px;padding:9px;direction:ltr;font-family:var(--mono);font-size:.88rem;color:var(--accent);margin-bottom:11px">' + escHtml(s.de) + '</div>' +
+      '<div style="white-space:pre-wrap;line-height:1.9">' + escHtml(t) + '</div>';
+  }, function() {
+    content.innerHTML = '<p style="color:var(--red)">خطأ في الاتصال. تحقق من مفتاح API والإنترنت.</p>';
+  });
+}
+
+// ════════════════════════════════════════
+//  GEMINI API — Multi-method approach for Android WebView
+//  Tries fetch → XHR → Image ping (debug) in sequence
+// ════════════════════════════════════════
+var _geminiCallbacks = {};
+var _geminiCbIdx = 0;
+
+function callGemini(prompt, maxTokens, onSuccess, onError) {
+  if (!S.apiKey) { if (onError) onError('no key'); return; }
+  // Try fetch first, fallback to XHR
+  _callGeminiFetch(prompt, maxTokens, onSuccess, function(e1) {
+    // fetch failed, try XHR
+    _callGeminiXHR(prompt, maxTokens, onSuccess, function(e2) {
+      // both failed — show debug info
+      var msg = '⚠️ تعذر الاتصال بـ Gemini\nتأكد من:\n1. الإنترنت شغال\n2. المفتاح صح\n3. فتح التطبيق من جديد';
+      if (onError) onError(msg);
+      else if (onSuccess) onSuccess(msg);
+    });
+  });
+}
+
+function _parseGeminiResponse(text) {
+  try {
+    var d = JSON.parse(text);
+    return (d.candidates && d.candidates[0] && d.candidates[0].content &&
+            d.candidates[0].content.parts && d.candidates[0].content.parts[0] &&
+            d.candidates[0].content.parts[0].text) || null;
+  } catch(e) { return null; }
+}
+
+function _callGeminiFetch(prompt, maxTokens, onSuccess, onError) {
+  if (typeof fetch === 'undefined') { onError('no fetch'); return; }
+  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + S.apiKey;
+  var body = JSON.stringify({
+    contents: [{parts: [{text: prompt}]}],
+    generationConfig: {maxOutputTokens: maxTokens || 300}
+  });
+  fetch(url, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: body
+  }).then(function(r) {
+    return r.text();
+  }).then(function(txt) {
+    var result = _parseGeminiResponse(txt);
+    if (result) onSuccess(result);
+    else onError('parse error: ' + txt.substring(0, 100));
+  }).catch(function(e) {
+    onError('fetch error: ' + e.message);
+  });
+}
+
+function _callGeminiXHR(prompt, maxTokens, onSuccess, onError) {
+  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + S.apiKey;
+  var body = JSON.stringify({
+    contents: [{parts: [{text: prompt}]}],
+    generationConfig: {maxOutputTokens: maxTokens || 300}
+  });
+  var xhr;
+  try { xhr = new XMLHttpRequest(); } catch(e) { onError('no xhr'); return; }
+  xhr.open('POST', url, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.timeout = 25000;
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState !== 4) return;
+    var result = _parseGeminiResponse(xhr.responseText);
+    if (xhr.status === 200 && result) {
+      onSuccess(result);
+    } else {
+      var errMsg = 'XHR status=' + xhr.status;
+      try {
+        var ed = JSON.parse(xhr.responseText);
+        if (ed.error) errMsg += ' ' + (ed.error.message || '');
+      } catch(e) {}
+      onError(errMsg);
+    }
+  };
+  xhr.ontimeout = function() { onError('xhr timeout'); };
+  xhr.onerror = function() { onError('xhr network error'); };
+  try { xhr.send(body); } catch(e) { onError('xhr send error: ' + e.message); }
+}
+
+function closeAI() { document.getElementById('aiPanel').classList.remove('on'); }
+
+// ════════════════════════════════════════
+//  THEME / API KEY / TABS / TOAST
+// ════════════════════════════════════════
+function toggleTheme() {
+  S.dark = !S.dark;
+  document.body.classList.toggle('light', !S.dark);
+  document.getElementById('themeBtn').textContent = S.dark ? '🌙' : '☀️';
+  document.getElementById('darkTog').classList.toggle('on', S.dark);
+}
+document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+
+function saveKey() {
+  S.apiKey = document.getElementById('apiInput').value.trim();
+  localStorage.setItem('gsp_key', S.apiKey);
+  showToast('✅ تم حفظ مفتاح API');
+}
+
+function showTab(name) {
+  ['import', 'sentences', 'saved', 'settings'].forEach(t => {
+    document.getElementById(t + '-tab').style.display = 'none';
+    const el = document.getElementById('tab-' + t);
+    if (el) el.classList.remove('on');
+  });
+  document.getElementById(name + '-tab').style.display = 'block';
+  const tabEl = document.getElementById('tab-' + name);
+  if (tabEl) tabEl.classList.add('on');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 2800);
+}
+</script>
+</body>
+</html>
