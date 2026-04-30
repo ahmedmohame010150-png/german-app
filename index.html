@@ -1327,26 +1327,26 @@ function _parseGeminiResponse(text) {
 }
 
 function _callGeminiFetch(prompt, maxTokens, onSuccess, onError) {
-  if (typeof fetch === 'undefined') { onError('no fetch'); return; }
   var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + S.apiKey;
   var body = JSON.stringify({
-    contents: [{parts: [{text: prompt}]}],
-    generationConfig: {maxOutputTokens: maxTokens || 300}
+    contents: [{parts: [{text: prompt}]}]
   });
   fetch(url, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: body
-  }).then(function(r) {
-    return r.text();
-  }).then(function(txt) {
-    var result = _parseGeminiResponse(txt);
-    if (result) onSuccess(result);
-    else onError('parse error: ' + txt.substring(0, 100));
-  }).catch(function(e) {
-    onError('fetch error: ' + e.message);
-  });
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.candidates && data.candidates[0].content.parts[0].text) {
+      onSuccess(data.candidates[0].content.parts[0].text);
+    } else {
+      onError('رد غير صالح من جوجل');
+    }
+  })
+  .catch(function(e) { onError('خطأ في الشبكة: ' + e.message); });
 }
+
 
 function _callGeminiXHR(prompt, maxTokens, onSuccess, onError) {
   var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + S.apiKey;
